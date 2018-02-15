@@ -36,17 +36,12 @@ public class Polygon
 {
     public List<Point> Points { get; set; }
 
-    public long Area
+    public double Area
     {
         get
         {
             var points = ComputeConvexHull();
-
-            // THIS IS WRONG...
-            var area = Math.Abs(points.Take(points.Count - 1)
-                .Select((p, i) => (points[i + 1].X - p.X) * (points[i + 1].Y + p.Y))
-                .Sum() / 2);
-
+            var area = ComputeArea(points);
             return area;
         }
     }
@@ -54,6 +49,24 @@ public class Polygon
     public Polygon()
     {
         Points = new List<Point>();
+    }
+
+    // https://www.codeproject.com/Tips/601272/Calculating-the-area-of-a-polygon
+    public double ComputeArea(IEnumerable<Point> points)
+    {
+        var e = points.GetEnumerator();
+        if (!e.MoveNext()) return 0;
+        Point first = e.Current, last = first;
+
+        double area = 0;
+        while (e.MoveNext())
+        {
+            Point next = e.Current;
+            area += next.X * last.Y - last.X * next.Y;
+            last = next;
+        }
+        area += first.X * last.Y - last.X * first.Y;
+        return area / 2;
     }
 
     // http://loyc-etc.blogspot.com/2014/05/2d-convex-hull-in-c-45-lines-of-code.html
@@ -71,7 +84,7 @@ public class Polygon
             Point p = Points[i], p1;
 
             // build lower hull (at end of output list)
-            while (l >= 2 && ((p1 = hull.Last()) -hull[hull.Count - 2]) * (p - p1) >= 0)
+            while (l >= 2 && ((p1 = hull.Last()) - hull[hull.Count - 2]) * (p - p1) >= 0)
             {
                 hull.RemoveAt(hull.Count - 1);
                 l--;
