@@ -42,9 +42,9 @@ public class Polygon
         {
             var points = ComputeConvexHull();
 
-            // https://stackoverflow.com/questions/2034540/calculating-area-of-irregular-polygon-in-c-sharp
+            // THIS IS WRONG...
             var area = Math.Abs(points.Take(points.Count - 1)
-                .Select((p, i) => (p.X * points[i + 1].Y) - (p.Y * points[i + 1].X))
+                .Select((p, i) => (points[i + 1].X - p.X) * (points[i + 1].Y + p.Y))
                 .Sum() / 2);
 
             return area;
