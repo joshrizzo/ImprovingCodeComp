@@ -27,7 +27,8 @@ public class Program
                 polygon.Points.Add(point);
             }
 
-            Console.WriteLine(polygon.Area);
+            var roundedArea = Math.Round(polygon.Area);
+            Console.WriteLine(roundedArea);
         }
     }
 }
@@ -41,8 +42,22 @@ public class Polygon
         get
         {
             var points = ComputeConvexHull();
-            var area = ComputeArea(points);
-            return area;
+
+            // https://www.codeproject.com/Tips/601272/Calculating-the-area-of-a-polygon
+            var e = points.GetEnumerator();
+            if (!e.MoveNext()) return 0;
+            Point first = e.Current, last = first;
+
+            double area = 0;
+            while (e.MoveNext())
+            {
+                Point next = e.Current;
+                area += next.X * last.Y - last.X * next.Y;
+                last = next;
+            }
+            area += first.X * last.Y - last.X * first.Y;
+
+            return area / 2;
         }
     }
 
@@ -51,26 +66,8 @@ public class Polygon
         Points = new List<Point>();
     }
 
-    // https://www.codeproject.com/Tips/601272/Calculating-the-area-of-a-polygon
-    public double ComputeArea(IEnumerable<Point> points)
-    {
-        var e = points.GetEnumerator();
-        if (!e.MoveNext()) return 0;
-        Point first = e.Current, last = first;
-
-        double area = 0;
-        while (e.MoveNext())
-        {
-            Point next = e.Current;
-            area += next.X * last.Y - last.X * next.Y;
-            last = next;
-        }
-        area += first.X * last.Y - last.X * first.Y;
-        return area / 2;
-    }
-
     // http://loyc-etc.blogspot.com/2014/05/2d-convex-hull-in-c-45-lines-of-code.html
-    public List<Point> ComputeConvexHull()
+    private List<Point> ComputeConvexHull()
     {
         Points = new List<Point>(Points);
         Points.Sort((a, b) => a.X == b.X ? a.Y.CompareTo(b.Y) : (a.X > b.X ? 1 : -1));
