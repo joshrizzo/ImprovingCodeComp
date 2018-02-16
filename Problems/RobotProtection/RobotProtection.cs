@@ -27,7 +27,7 @@ public class Program
                 polygon.Points.Add(point);
             }
 
-            var roundedArea = Math.Round(polygon.Area);
+            var roundedArea = Math.Round(polygon.Area, 1, MidpointRounding.AwayFromZero);
             Console.WriteLine(roundedArea);
         }
     }
