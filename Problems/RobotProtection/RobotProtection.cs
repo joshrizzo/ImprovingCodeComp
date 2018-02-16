@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class Program
+public class RobotProtectionProgram
 {
-    public static void Main(string[] args)
+    public static void RobotProtectionMain(string[] args)
     {
         string line;
         while ((line = Console.ReadLine()) != null)
